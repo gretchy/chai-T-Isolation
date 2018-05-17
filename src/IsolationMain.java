@@ -9,5 +9,7 @@ public class IsolationMain {
 		System.out.println(" Gretchen Lai - Nandita Chauhan");
 		System.out.println("      CS 420 - Spring 2018");
 		System.out.println("********************************");
+		
+		Board board = new Board();
 	}
 }
