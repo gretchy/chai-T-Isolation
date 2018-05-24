@@ -91,8 +91,26 @@ public class Board {
 		return position;
 	}
 	
-	public boolean checkMove(String player, String move) {
+	public boolean isIsolated(String player) {
+		for(int x = -1; x < 2; x++) {
+			for(int y = -1; y < 2; y++) {
+				if(x != 0 || y != 0) {
+					// check if row value would be out of bounds
+					if(getPosition(player)[0] + x >= 0 && getPosition(player)[0] + x <= 8) {
+						// check if column value would be out of bounds
+						if(getPosition(player)[1] + y >= 0 && getPosition(player)[1] + y <= 8) {
+							if(board[getPosition(player)[0] + x][getPosition(player)[1] + y].equals("-"))
+								return false; // there is still an empty space for player to move to
+						}
+					}
+				}
+			}
+		}
 		
+		return true; // player has been isolated by opponent
+	}
+	
+	public boolean checkMove(String player, String move) {
 		int newRow;
 		if(move.startsWith("A"))
 			newRow = 0;
@@ -233,14 +251,28 @@ public class Board {
 	public void printBoard() {
 		String[] rowIndexes = new String[]{"A", "B", "C", "D", "E", "F", "G", "H"};
 		
-		System.out.println("\n  1 2 3 4 5 6 7 8");
+		System.out.println("\n  1 2 3 4 5 6 7 8\tComputer vs. Oponent");
 		for(int row = 0; row < board.length; row++) {
 			String completeRow = rowIndexes[row] + " ";
 			for(int col = 0; col < board.length; col++) {
 				completeRow += board[row][col];
 				completeRow += " ";
 			}
-			System.out.println(completeRow);
+			
+			if(row < xMoves.size()) {
+				System.out.print(completeRow + "\t" + (row + 1) + ". ");
+				
+				if(row < oMoves.size()) {
+					System.out.print(xMoves.get(row));
+					System.out.println("    \t" + oMoves.get(row));
+				}
+				else {
+					System.out.println(xMoves.get(row));
+				}
+			}
+			else {
+				System.out.println(completeRow);
+			}
 		}
 	}
 }
