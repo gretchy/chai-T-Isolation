@@ -13,12 +13,20 @@ public class IsolationMain {
 		//System.out.print("\nTime Limit per move: ");
 		//int timeLimit = keyboard.nextInt(); // add check to make sure user input is a valid number
 		System.out.print("First player (C or O)? ");
-		String player = keyboard.nextLine(); // add check to make sure user input is valid string
+		String player = keyboard.nextLine().toUpperCase();
+		
+		// check to make sure user input is valid string
+		while(!player.equals("C") && !player.equals("O")) {
+			System.out.println("Invalid option given...");
+			System.out.print("First player (C or O)? ");
+			player = keyboard.nextLine().toUpperCase();
+		}
 		
 		if(player.equals("C")) {
 			Board board = new Board();
-			board.makeMove("X", "B2");
+			board.makeMove("X", "F6");
 			board.makeMove("O", "G7");
+			board.makeMove("X", "B2");
 		}
 		else {
 			
