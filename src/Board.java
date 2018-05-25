@@ -36,19 +36,19 @@ public class Board {
 		
 		if(checkMove(player, move)) {
 			int newRow;
-			if(move.startsWith("A"))
+			if(move.startsWith("A") || move.startsWith("a"))
 				newRow = 0;
-			else if(move.startsWith("B"))
+			else if(move.startsWith("B") || move.startsWith("b"))
 				newRow = 1;
-			else if(move.startsWith("C"))
+			else if(move.startsWith("C") || move.startsWith("c"))
 				newRow = 2;
-			else if(move.startsWith("D"))
+			else if(move.startsWith("D") || move.startsWith("d"))
 				newRow = 3;
-			else if(move.startsWith("E"))
+			else if(move.startsWith("E") || move.startsWith("e"))
 				newRow = 4;
-			else if(move.startsWith("F"))
+			else if(move.startsWith("F") || move.startsWith("f"))
 				newRow = 5;
-			else if(move.startsWith("G"))
+			else if(move.startsWith("G") || move.startsWith("g"))
 				newRow = 6;
 			else
 				newRow = 7;
@@ -66,7 +66,7 @@ public class Board {
 			
 			board[playerLoc[0]][playerLoc[1]] = "#";
 			
-			printBoard();
+			//printBoard();
 		}
 		else
 			System.out.println("\nInvalid move. " + player + " needs to give another move.");
@@ -112,21 +112,21 @@ public class Board {
 	
 	public boolean checkMove(String player, String move) {
 		int newRow;
-		if(move.startsWith("A"))
+		if(move.startsWith("A") || move.startsWith("a"))
 			newRow = 0;
-		else if(move.startsWith("B"))
+		else if(move.startsWith("B") || move.startsWith("b"))
 			newRow = 1;
-		else if(move.startsWith("C"))
+		else if(move.startsWith("C") || move.startsWith("c"))
 			newRow = 2;
-		else if(move.startsWith("D"))
+		else if(move.startsWith("D") || move.startsWith("d"))
 			newRow = 3;
-		else if(move.startsWith("E"))
+		else if(move.startsWith("E") || move.startsWith("e"))
 			newRow = 4;
-		else if(move.startsWith("F"))
+		else if(move.startsWith("F") || move.startsWith("f"))
 			newRow = 5;
-		else if(move.startsWith("G"))
+		else if(move.startsWith("G") || move.startsWith("g"))
 			newRow = 6;
-		else if(move.startsWith("H"))
+		else if(move.startsWith("H") || move.startsWith("h"))
 			newRow = 7;
 		else
 			return false; // row is out of bounds

@@ -24,12 +24,22 @@ public class IsolationMain {
 		
 		if(player.equals("C")) {
 			Board board = new Board();
-			board.makeMove("X", "F6");
-			board.makeMove("O", "G7");
-			board.makeMove("X", "B2");
+			
+			//board.makeMove("O", "G7");
+			//board.makeMove("X", "B2");
+			
+			while(!board.isIsolated("X") && !board.isIsolated("O")) {
+				String compMove = "F6";
+				board.makeMove("X", compMove);
+				board.printBoard();
+				System.out.println("\nComputer's move is: " + compMove);
+				System.out.print("Enter opponent's move: ");
+				String oppMove = keyboard.nextLine();
+				board.makeMove("O", oppMove);
+			}
 		}
 		else {
-			
+			Board board = new Board();
 		}
 		
 		keyboard.close();
