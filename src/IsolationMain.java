@@ -35,6 +35,14 @@ public class IsolationMain {
 				System.out.println("\nComputer's move is: " + compMove);
 				System.out.print("Enter opponent's move: ");
 				String oppMove = keyboard.nextLine();
+				
+				// check if opponent entered a valid move
+				while(!board.checkMove("O", oppMove)) {
+					System.out.println("Invalid move.");
+					System.out.print("Enter opponent's move: ");
+					oppMove = keyboard.nextLine();
+				}
+				
 				board.makeMove("O", oppMove);
 			}
 		}
