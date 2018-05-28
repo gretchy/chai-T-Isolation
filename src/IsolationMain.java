@@ -1,4 +1,8 @@
+import java.awt.Point;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.Vector;
 
 public class IsolationMain {
 	public static void main(String[] args) {
@@ -52,6 +56,7 @@ public class IsolationMain {
 		
 		keyboard.close();
 	}
+
 	
 	public boolean isValidMove(Board board, String player, String move) {
 		boolean isValid = true;
@@ -59,5 +64,48 @@ public class IsolationMain {
 		
 		
 		return isValid;
+	}
+	
+	
+	
+	static int board_index = 1; // how the user refers to to the first row/column
+    static int infinity = 9999;
+    static int neg_infinity = -9999; // to be used in alpha-beta
+    
+	public static int alphaBetaSearch(Board root, int depth_limit){
+        int score = maxValue(root, neg_infinity, infinity, depth_limit);
+        return score;
+    }
+	public static int maxValue(Board node, int alpha, int beta, int depth_limit){
+        if (node.getDepth() >= depth_limit || node.getValidMoves().size() == 0){
+            return node.evaluate();
+        }
+        int value = neg_infinity;
+        Iterator itr = node.getValidMoves().iterator();
+        Vector<Board> children = new Vector<Board>(); 
+        while(itr.hasNext()){
+            Point move = (Point)itr.next();
+            Board child = new Board();
+            children.add(child);
+            value = Math.max(value, minValue(child, alpha, beta, depth_limit));
+            child.value = value;
+            if (value >= beta){
+                return value;
+            }
+            alpha = Math.max(alpha, value);
+        }
+        itr = children.iterator();
+        while(itr.hasNext()){
+            Board current = (Board)itr.next();
+
+            int[] coord = current.findChar(node.getTurn());
+        }
+        return value;
+	}
+
+
+	private static int minValue(Board child, int alpha, int beta, int depth_limit) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
