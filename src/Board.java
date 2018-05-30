@@ -1,10 +1,10 @@
 import java.awt.Point;
 import java.util.Vector;
+import java.lang.Math;
 import java.util.ArrayList;
 
 public class Board implements Comparable {
 	public static int size = 8; // width of board
-	private Board parent; // parent of the current board state
 	private String[][] state; // current state of the game
 	private String turn; // stores which player's turn it is
 	private int depth; // depth to reach when searching for best move to make
@@ -13,7 +13,6 @@ public class Board implements Comparable {
 
 	// basic constructor
 	public Board() {
-		this.parent = null;
 		this.state = new String[size][size];
 		this.turn = "X";
 		this.depth = 0;
@@ -22,8 +21,7 @@ public class Board implements Comparable {
 	}
 
 	// constructor with parameters: Board, Point, and String
-	public Board(Board parent, Point move_to, String player) {
-		this.parent = parent;
+	public Board(Board parent, Point move_to, String val) {
 		this.state = new String[size][size];
 
 		// copy over board state from parent/previous state of the game
@@ -33,15 +31,15 @@ public class Board implements Comparable {
 		}
 
 		// stores the old coordinates of player
-		int[] old_coordinates = this.getPosition(player);
+		int[] old_coordinates = this.getPosition(val);
 
-		this.setState((int) move_to.getX(), (int) move_to.getY(), player);
+		this.setState((int) move_to.getX(), (int) move_to.getY(), val);
 		this.setState(old_coordinates[0], old_coordinates[1], "#"); // mark old location with visited symbol
 
-		if (player.equals("X"))
-			this.turn = "O"; // switching turn to O
+		if (val.equals("X"))
+			this.turn = "O"; // switching turn to O player
 		else
-			this.turn = "X"; // switching turn to X
+			this.turn = "X"; // switching turn to X player
 
 		this.depth = parent.depth + 1;
 		this.validMoves = this.setValidMoves();
@@ -82,8 +80,13 @@ public class Board implements Comparable {
 	public void setTurn(String t) {
 		this.turn = t;
 	}
+	
+	// clears all the validMoves belonging to the last calculations
+	public void clearValidMoves() {
+		this.validMoves = new Vector<Point>();
+	}
 
-	// gets all the valid moves for current player
+	// establishes all the valid moves for current player
 	public Vector<Point> setValidMoves() {
 		int limit; // to be used in diagonals
 		Vector<Point> possibleMoves = new Vector<Point>(); // stores all the possible valid moves
@@ -117,7 +120,6 @@ public class Board implements Comparable {
 			else
 				break;
 		}
-
 		// NORTHEAST diagonal
 		if (coordinates[0] > size - coordinates[1] - 1)
 			limit = size - coordinates[1] - 1;
@@ -126,8 +128,7 @@ public class Board implements Comparable {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] - index][coordinates[1] + index].equals("-")) {
 				possibleMoves.add(new Point((coordinates[0] - index), (coordinates[1] + index)));
-			}
-			else
+			} else
 				break;
 		}
 		// SOUTHEAST diagonal
@@ -138,8 +139,7 @@ public class Board implements Comparable {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] + index][coordinates[1] + index].equals("-")) {
 				possibleMoves.add(new Point((coordinates[0] + index), (coordinates[1] + index)));
-			}
-			else
+			} else
 				break;
 		}
 		// SOUTHWEST diagonal
@@ -150,8 +150,7 @@ public class Board implements Comparable {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] + index][coordinates[1] - index].equals("-")) {
 				possibleMoves.add(new Point((coordinates[0] + index), (coordinates[1] - index)));
-			}
-			else
+			} else
 				break;
 		}
 		// NORTHWEST diagonal
@@ -162,8 +161,7 @@ public class Board implements Comparable {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] - index][coordinates[1] - index].equals("-")) {
 				possibleMoves.add(new Point((coordinates[0] - index), (coordinates[1] - index)));
-			}
-			else
+			} else
 				break;
 		}
 
@@ -171,112 +169,112 @@ public class Board implements Comparable {
 	}
 
 	// calculates number of available moves that opponent has
-	public int opponentValidMoves(String opponent) {
+	public int opponentValidMoves(String that_String) {
 		int limit; // to be used in diagonals
 		Vector<Point> oppValidMoves = new Vector<Point>(); // stores all valid moves for opponent
-		int[] coordinates = getPosition(opponent); // stores opponent's current location
-
+		int[] coordinates = getPosition(that_String); // stores opponent's current location
+		
 		// cardinal direction - NORTH
-		for (int index = coordinates[0] - 1; index >= 0; index--) {
-			if (this.state[index][coordinates[1]].equals("-"))
-				oppValidMoves.add(new Point(index, coordinates[1]));
-			else
-				break;
-		}
-		// cardinal direction - EAST
-		for (int index = coordinates[1] + 1; index < size; index++) {
-			if (this.state[coordinates[0]][index].equals("-"))
-				oppValidMoves.add(new Point(coordinates[0], index));
-			else
-				break;
-		}
-		// cardinal direction - SOUTH
-		for (int index = coordinates[0] + 1; index < size; index++) {
-			if (this.state[index][coordinates[1]].equals("-"))
-				oppValidMoves.add(new Point(index, coordinates[1]));
-			else
-				break;
-		}
-		// cardinal direction - WEST
-		for (int index = coordinates[1] - 1; index >= 0; index--) {
-			if (this.state[coordinates[0]][index].equals("-"))
-				oppValidMoves.add(new Point(coordinates[0], index));
-			else
-				break;
-		}
-		// NORTHWEST diagonal
-		if (coordinates[0] > coordinates[1])
-			limit = coordinates[1];
-		else
-			limit = coordinates[0];
-		for (int index = 1; index <= limit; index++) {
-			if (this.state[coordinates[0] - index][coordinates[1] - index].equals("-")) {
-				oppValidMoves.add(new Point((coordinates[0] - index), (coordinates[1] - index)));
-			}
-			else
-				break;
-		}
-		// NORTHEAST diagonal
-		if (coordinates[0] > size - coordinates[1] - 1)
-			limit = size - coordinates[1] - 1;
-		else
-			limit = coordinates[0];
-		for (int index = 1; index <= limit; index++) {
-			if (this.state[coordinates[0] - index][coordinates[1] + index].equals("-")) {
-				oppValidMoves.add(new Point((coordinates[0] - index), (coordinates[1] + index)));
-			}
-			else
-				break;
-		}
+				for (int index = coordinates[0] - 1; index >= 0; index--) {
+					if (this.state[index][coordinates[1]].equals("-"))
+						oppValidMoves.add(new Point(index, coordinates[1]));
+					else
+						break;
+				}
+				// cardinal direction - EAST
+				for (int index = coordinates[1] + 1; index < size; index++) {
+					if (this.state[coordinates[0]][index].equals("-"))
+						oppValidMoves.add(new Point(coordinates[0], index));
+					else
+						break;
+				}
+				// cardinal direction - SOUTH
+				for (int index = coordinates[0] + 1; index < size; index++) {
+					if (this.state[index][coordinates[1]].equals("-"))
+						oppValidMoves.add(new Point(index, coordinates[1]));
+					else
+						break;
+				}
+				// cardinal direction - WEST
+				for (int index = coordinates[1] - 1; index >= 0; index--) {
+					if (this.state[coordinates[0]][index].equals("-"))
+						oppValidMoves.add(new Point(coordinates[0], index));
+					else
+						break;
+				}
+				// NORTHWEST diagonal
+				if (coordinates[0] > coordinates[1])
+					limit = coordinates[1];
+				else
+					limit = coordinates[0];
+				for (int index = 1; index <= limit; index++) {
+					if (this.state[coordinates[0] - index][coordinates[1] - index].equals("-")) {
+						oppValidMoves.add(new Point((coordinates[0] - index), (coordinates[1] - index)));
+					}
+					else
+						break;
+				}
+				// NORTHEAST diagonal
+				if (coordinates[0] > size - coordinates[1] - 1)
+					limit = size - coordinates[1] - 1;
+				else
+					limit = coordinates[0];
+				for (int index = 1; index <= limit; index++) {
+					if (this.state[coordinates[0] - index][coordinates[1] + index].equals("-")) {
+						oppValidMoves.add(new Point((coordinates[0] - index), (coordinates[1] + index)));
+					}
+					else
+						break;
+				}
 
-		// SOUTHWEST diagonal
-		if (size - coordinates[0] - 1 < coordinates[1])
-			limit = size - coordinates[0] - 1;
-		else
-			limit = coordinates[1];
-		for (int index = 1; index <= limit; index++) {
-			if (this.state[coordinates[0] + index][coordinates[1] - index].equals("-")) {
-				oppValidMoves.add(new Point((coordinates[0] + index), (coordinates[1] - index)));
-			}
-			else
-				break;
-		}
-		// SOUTHEAST diagonal
-		if (size - coordinates[0] - 1 < size - coordinates[1] - 1)
-			limit = size - coordinates[0] - 1;
-		else
-			limit = size - coordinates[1] - 1;
-		for (int index = 1; index <= limit; index++) {
-			if (this.state[coordinates[0] + index][coordinates[1] + index].equals("-")) {
-				oppValidMoves.add(new Point((coordinates[0] + index), (coordinates[1] + index)));
-			}
-			else
-				break;
-		}
+				// SOUTHWEST diagonal
+				if (size - coordinates[0] - 1 < coordinates[1])
+					limit = size - coordinates[0] - 1;
+				else
+					limit = coordinates[1];
+				for (int index = 1; index <= limit; index++) {
+					if (this.state[coordinates[0] + index][coordinates[1] - index].equals("-")) {
+						oppValidMoves.add(new Point((coordinates[0] + index), (coordinates[1] - index)));
+					}
+					else
+						break;
+				}
+				// SOUTHEAST diagonal
+				if (size - coordinates[0] - 1 < size - coordinates[1] - 1)
+					limit = size - coordinates[0] - 1;
+				else
+					limit = size - coordinates[1] - 1;
+				for (int index = 1; index <= limit; index++) {
+					if (this.state[coordinates[0] + index][coordinates[1] + index].equals("-")) {
+						oppValidMoves.add(new Point((coordinates[0] + index), (coordinates[1] + index)));
+					}
+					else
+						break;
+				}
 		return oppValidMoves.size();
 	}
 
 	// evaluation of utility function
 	public int evaluate() {
-		/* multipliers */
+		// all the multipliers to be used
 		int X = 3;
 		int Y = 1;
 		int Z = 3;
 		int W = 2;
 
-		String otherPlayer = "X";
+		String that_String = "X";
 		if (this.turn.equals("X"))
-			otherPlayer = "O";
-		
+			that_String = "O";
+
 		int this_row = this.getPosition(this.turn)[0];
+		int that_row = this.getPosition(that_String)[0];
 		int this_col = this.getPosition(this.turn)[1];
-		int other_row = this.getPosition(otherPlayer)[0];
-		int other_col = this.getPosition(otherPlayer)[1];
+		int that_col = this.getPosition(that_String)[1];
 		
 		// start with X times the number of valid moves
 		int score = X * this.validMoves.size();
 		// subtract Y times the number of opponent's valid moves
-		score -= Y * this.opponentValidMoves(otherPlayer);
+		score -= Y * this.opponentValidMoves(that_String);
 		
 		// subtract 10 for each wall it's next to
 		if (this_row == 0 || this_row == size - 1)
@@ -290,12 +288,11 @@ public class Board implements Comparable {
 					if (!this.state[this_row + i][this_col + j].equals("-"))
 						score -= Z; // subtract Z for each surrounding cell that is filled
 				}
-				
-				if (i + other_row >= 0 && i + other_row <= size - 1 && j + other_col >= 0
-						&& j + other_col <= size - 1) {
-					if (!this.state[other_row + i][other_col + j].equals("-"))
+				if (i + that_row >= 0 && i + that_row <= size - 1 && j + that_col >= 0 && j + that_col <= size - 1) {
+					if (!this.state[that_row + i][that_col + j].equals("-"))
 						score += Z; // add Z for each cell surrounding the opponent that is filled
 				}
+
 			}
 		}
 
@@ -445,9 +442,9 @@ public class Board implements Comparable {
 			for (int y = -1; y < 2; y++) {
 				if (x != 0 || y != 0) {
 					// check if row value would be out of bounds
-					if (getPosition(player)[0] + x >= 0 && getPosition(player)[0] + x <= 8) {
+					if (getPosition(player)[0] + x >= 0 && getPosition(player)[0] + x < 8) {
 						// check if column value would be out of bounds
-						if (getPosition(player)[1] + y >= 0 && getPosition(player)[1] + y <= 8) {
+						if (getPosition(player)[1] + y >= 0 && getPosition(player)[1] + y < 8) {
 							if (state[getPosition(player)[0] + x][getPosition(player)[1] + y].equals("-"))
 								return false; // there is still an empty space for player to move to
 						}
@@ -458,16 +455,15 @@ public class Board implements Comparable {
 
 		return true; // player has been isolated by opponent
 	}
-
+	
 	// implementing Comparable's compareTo() method to work with comparing Boards
 	public int compareTo(Object other) {
 		String[][] thisState = this.getState();
-		String[][] otherState = ((Board)other).getState();
+		String[][] thatState = ((Board) other).getState();
 		int length = this.getState().length;
-		
-		for (int row = 0; row < length; row++) {
-			for (int col = 0; col < length; col++) {
-				if (!thisState[row][col].equals(otherState[row][col]))
+		for (int i = 0; i < length; i++) {
+			for (int j = 0; j < length; j++) {
+				if (!thisState[i][j].equals(thatState[i][j]))
 					return 1;
 			}
 		}
@@ -504,14 +500,17 @@ public class Board implements Comparable {
 				if (row < oMoves.size()) {
 					System.out.print(xMoves.get(row));
 					System.out.println("    \t" + oMoves.get(row));
-				} else { // O hasn't made a move
+				}
+				else { // O hasn't made a move
 					System.out.println(xMoves.get(row));
 				}
-			} else { // X has not made a move
+			}
+			else { // X has not made a move
 				if (row < oMoves.size()) { // O has made a move
 					System.out.print(completeRow + "\t" + (row + 1) + ". ");
 					System.out.println("    \t\t" + oMoves.get(row));
-				} else // no one has made a move yet
+				}
+				else // no one has made a move yet
 					System.out.println(completeRow);
 			}
 		}
@@ -524,10 +523,12 @@ public class Board implements Comparable {
 				if (oMoves.size() > index) { // number of O moves also exceed board size
 					System.out.print("\t\t\t" + (index + 1) + ". " + xMoves.get(index));
 					System.out.println("    \t" + oMoves.get(index));
-				} else
+				}
+				else
 					System.out.println("\t\t\t" + (index + 1) + ". " + xMoves.get(index));
 			}
-		} else if (oMoves.size() > size) // number of X moves exceed board size while number of X moves don't
+		}
+		else if (oMoves.size() > size) // number of X moves exceed board size while number of X moves don't
 			for (int index = size; index < oMoves.size(); index++)
 				System.out.println("\t\t\t" + (index + 1) + ".     \t\t" + oMoves.get(index));
 	}
