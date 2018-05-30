@@ -21,7 +21,7 @@ public class Board implements Comparable {
 	}
 
 	// constructor with parameters: Board, Point, and String
-	public Board(Board parent, Point move_to, String val) {
+	public Board(Board parent, Point move_to, String player) {
 		this.state = new String[size][size];
 
 		// copy over board state from parent/previous state of the game
@@ -31,12 +31,12 @@ public class Board implements Comparable {
 		}
 
 		// stores the old coordinates of player
-		int[] old_coordinates = this.getPosition(val);
+		int[] old_coordinates = this.getPosition(player);
 
-		this.setState((int) move_to.getX(), (int) move_to.getY(), val);
+		this.setState((int) move_to.getX(), (int) move_to.getY(), player);
 		this.setState(old_coordinates[0], old_coordinates[1], "#"); // mark old location with visited symbol
 
-		if (val.equals("X"))
+		if (player.equals("X"))
 			this.turn = "O"; // switching turn to O player
 		else
 			this.turn = "X"; // switching turn to X player
@@ -260,7 +260,6 @@ public class Board implements Comparable {
 		int X = 3;
 		int Y = 1;
 		int Z = 3;
-		int W = 2;
 
 		String that_String = "X";
 		if (this.turn.equals("X"))
