@@ -76,15 +76,15 @@ public class IsolationMain {
 			// computer's turn to make move
 			if (computer_turn) {
 				root.setTurn(computer);
-				if (!root.isIsolated(computer)) {
+				if (!root.isIsolated(computer)) { // computer still has room to move
 					root.validMoves = root.setValidMoves();
-					computerMove();
-					root.setState(board);
-					root.printBoard(xMoves, oMoves);
+					computerMove(); // computer makes move
+					root.setState(board); // updates root with new settings
+					root.printBoard(xMoves, oMoves); // print out board to reflect move
 					System.out.println("\nComputer's move is: " + xMoves.get(xMoves.size() - 1));
 					round++;
 				}
-				else {
+				else { // no more moves possible
 					System.out.println("\nX has been isolated. Opponent Wins!");
 					break;
 				}
@@ -92,13 +92,13 @@ public class IsolationMain {
 			// opponent's turn to make move
 			else {
 				root.setTurn(opponent);
-				if (!root.isIsolated(opponent)) {
-					root.validMoves = root.setValidMoves();
-					opponentMove();
-					root.printBoard(xMoves, oMoves);
+				if (!root.isIsolated(opponent)) { // opponent still has room to move
+					//root.validMoves = root.setValidMoves();
+					opponentMove(); // opponent makes move
+					//root.printBoard(xMoves, oMoves); // print out board to reflect move
 					round++;
 				}
-				else {
+				else { // no more moves possible
 					System.out.println("\nO has been isolated. Computer Wins!");
 					break;
 				}
