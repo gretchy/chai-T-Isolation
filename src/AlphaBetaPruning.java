@@ -3,7 +3,6 @@ import java.util.Vector;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
-import java.lang.String;
 
 public class AlphaBetaPruning {
 	static long start_time = 0; // starts timing for computer to make its move
@@ -37,10 +36,8 @@ public class AlphaBetaPruning {
 			children.add(child);
 			value = Math.max(value, minValue(child, alpha, beta, depth_limit));
 			child.value = value;
-			if (value >= beta) {
-				// best_move = node.findString(node.getTurn());
+			if (value >= beta)
 				return value;
-			}
 			alpha = Math.max(alpha, value);
 		}
 		itr = children.iterator();
@@ -56,7 +53,6 @@ public class AlphaBetaPruning {
 	public int minValue(Board node, int alpha, int beta, int depth_limit) {
 		elapsed_time = (System.nanoTime() - start_time) / 1000000000;
 		if (node.getDepth() >= depth_limit || node.getValidMoves().size() == 0 || elapsed_time > .95 * timeLimit) {
-			// best_move = node.findString(node.getTurn());
 			return node.evaluate();
 		}
 		int value = infinity;
@@ -66,10 +62,8 @@ public class AlphaBetaPruning {
 			Board child = new Board(node, move, node.getTurn());
 			value = Math.min(value, minValue(child, alpha, beta, depth_limit));
 			child.value = value;
-			if (value >= beta) {
-				// best_move = node.findString(node.getTurn());
+			if (value >= beta)
 				return value;
-			}
 			alpha = Math.min(beta, value);
 		}
 		return value;

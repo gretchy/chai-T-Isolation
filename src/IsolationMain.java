@@ -1,14 +1,7 @@
-import java.awt.Point;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Scanner;
-<<<<<<< HEAD
 import java.lang.String;
 import java.util.ArrayList;
 import java.io.*;
-=======
-import java.util.Vector;
->>>>>>> 5d1383ab2ce71ca33110d6765a3f12dbc7d60872
 
 public class IsolationMain {
 	public static Board root = new Board(); // root node for each search
@@ -106,7 +99,6 @@ public class IsolationMain {
 		keyboard.close();
 	}
 
-<<<<<<< HEAD
 	// setting the game board to blanks "-" & starting positions of X and O
 	public static void initialize() {
 		for (int row = 0; row < Board.size; row++) {
@@ -124,11 +116,6 @@ public class IsolationMain {
 	// edits the game board to reflect new valid move made by computer
 	public static void computerMove() {
 		AlphaBetaPruning instance = new AlphaBetaPruning(); // activate Alpha-Beta Pruning object
-=======
-	
-	public boolean isValidMove(Board board, String player, String move) {
-		boolean isValid = true;
->>>>>>> 5d1383ab2ce71ca33110d6765a3f12dbc7d60872
 		
 		int[] old_coord = root.getPosition(computer); // stores where X is currently located
 		int[] moveToCoords = instance.getBestMove(root, depth, timeLimit); // stores the coordinates that X is to move to
@@ -206,48 +193,5 @@ public class IsolationMain {
 			System.out.println("\nInvalid move. Please enter another move.");
 			opponentMove();
 		}
-	}
-	
-	
-	
-	static int board_index = 1; // how the user refers to to the first row/column
-    static int infinity = 9999;
-    static int neg_infinity = -9999; // to be used in alpha-beta
-    
-	public static int alphaBetaSearch(Board root, int depth_limit){
-        int score = maxValue(root, neg_infinity, infinity, depth_limit);
-        return score;
-    }
-	public static int maxValue(Board node, int alpha, int beta, int depth_limit){
-        if (node.getDepth() >= depth_limit || node.getValidMoves().size() == 0){
-            return node.evaluate();
-        }
-        int value = neg_infinity;
-        Iterator itr = node.getValidMoves().iterator();
-        Vector<Board> children = new Vector<Board>(); 
-        while(itr.hasNext()){
-            Point move = (Point)itr.next();
-            Board child = new Board();
-            children.add(child);
-            value = Math.max(value, minValue(child, alpha, beta, depth_limit));
-            child.value = value;
-            if (value >= beta){
-                return value;
-            }
-            alpha = Math.max(alpha, value);
-        }
-        itr = children.iterator();
-        while(itr.hasNext()){
-            Board current = (Board)itr.next();
-
-            int[] coord = current.findChar(node.getTurn());
-        }
-        return value;
-	}
-
-
-	private static int minValue(Board child, int alpha, int beta, int depth_limit) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

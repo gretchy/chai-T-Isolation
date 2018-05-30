@@ -1,11 +1,6 @@
 import java.awt.Point;
-<<<<<<< HEAD
 import java.util.Vector;
-=======
->>>>>>> 5d1383ab2ce71ca33110d6765a3f12dbc7d60872
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Vector;
 
 public class Board implements Comparable<Board> {
 	public static int size = 8; // width of board
@@ -15,20 +10,13 @@ public class Board implements Comparable<Board> {
 	public Vector<Point> validMoves; // all the legal moves that a player can make
 	public int value; // used for utility function
 
-
 	// basic constructor
 	public Board() {
-<<<<<<< HEAD
 		this.state = new String[size][size];
 		this.turn = "X";
 		this.depth = 0;
 		this.validMoves = new Vector<Point>();
 		this.value = 0;
-=======
-
-		initialize();
-		printBoard();
->>>>>>> 5d1383ab2ce71ca33110d6765a3f12dbc7d60872
 	}
 
 	// constructor with parameters: Board, Point, and String
@@ -93,10 +81,7 @@ public class Board implements Comparable<Board> {
 		this.turn = t;
 	}
 
-	/*
-	 * setValidMoves(String current_String) sets the validMoves Vector with
-	 * appropriate values; returns: NA args: NA
-	 */
+	// gets all the valid moves for current player
 	public Vector<Point> setValidMoves() {
 		int limit; // to be used in diagonals
 		Vector<Point> valid_moves = new Vector<Point>(); // stores all the possible valid moves
@@ -139,7 +124,8 @@ public class Board implements Comparable<Board> {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] - index][coordinates[1] + index].equals("-")) {
 				valid_moves.add(new Point((coordinates[0] - index), (coordinates[1] + index)));
-			} else
+			}
+			else
 				break;
 		}
 		// SOUTHEAST diagonal
@@ -150,7 +136,8 @@ public class Board implements Comparable<Board> {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] + index][coordinates[1] + index].equals("-")) {
 				valid_moves.add(new Point((coordinates[0] + index), (coordinates[1] + index)));
-			} else
+			}
+			else
 				break;
 		}
 		// SOUTHWEST diagonal
@@ -161,7 +148,8 @@ public class Board implements Comparable<Board> {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] + index][coordinates[1] - index].equals("-")) {
 				valid_moves.add(new Point((coordinates[0] + index), (coordinates[1] - index)));
-			} else
+			}
+			else
 				break;
 		}
 		// NORTHWEST diagonal
@@ -172,7 +160,8 @@ public class Board implements Comparable<Board> {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] - index][coordinates[1] - index].equals("-")) {
 				valid_moves.add(new Point((coordinates[0] - index), (coordinates[1] - index)));
-			} else
+			}
+			else
 				break;
 		}
 
@@ -182,7 +171,7 @@ public class Board implements Comparable<Board> {
 	// calculates number of available moves that opponent has
 	public int opponentValidMoves(String opponent) {
 		int limit; // to be used in diagonals
-		Vector<Point> valid_moves = new Vector<Point>();
+		Vector<Point> valid_moves = new Vector<Point>(); // stores all valid moves for opponent
 		int[] coordinates = getPosition(opponent); // stores opponent's current location
 
 		// cardinal direction - NORTH
@@ -221,7 +210,8 @@ public class Board implements Comparable<Board> {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] - index][coordinates[1] - index].equals("-")) {
 				valid_moves.add(new Point((coordinates[0] - index), (coordinates[1] - index)));
-			} else
+			}
+			else
 				break;
 		}
 		// NORTHEAST diagonal
@@ -232,7 +222,8 @@ public class Board implements Comparable<Board> {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] - index][coordinates[1] + index].equals("-")) {
 				valid_moves.add(new Point((coordinates[0] - index), (coordinates[1] + index)));
-			} else
+			}
+			else
 				break;
 		}
 
@@ -244,7 +235,8 @@ public class Board implements Comparable<Board> {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] + index][coordinates[1] - index].equals("-")) {
 				valid_moves.add(new Point((coordinates[0] + index), (coordinates[1] - index)));
-			} else
+			}
+			else
 				break;
 		}
 		// SOUTHEAST diagonal
@@ -255,7 +247,8 @@ public class Board implements Comparable<Board> {
 		for (int index = 1; index <= limit; index++) {
 			if (this.state[coordinates[0] + index][coordinates[1] + index].equals("-")) {
 				valid_moves.add(new Point((coordinates[0] + index), (coordinates[1] + index)));
-			} else
+			}
+			else
 				break;
 		}
 		return valid_moves.size();
@@ -267,30 +260,35 @@ public class Board implements Comparable<Board> {
 		int X = 3;
 		int Y = 1;
 		int Z = 3;
-		int W = 2;
+		//int W = 2;
 
 		String that_String = "X";
 		if (this.turn.equals("X"))
 			that_String = "O";
+		
 		int this_row = this.getPosition(this.turn)[0];
-		int other_row = this.getPosition(that_String)[0];
 		int this_col = this.getPosition(this.turn)[1];
+		int other_row = this.getPosition(that_String)[0];
 		int other_col = this.getPosition(that_String)[1];
+		
 		// start with X times the number of valid moves
 		int score = X * this.validMoves.size();
 		// subtract Y times the number of opponent's valid moves
 		score -= Y * this.opponentValidMoves(that_String);
+		
 		// subtract 10 for each wall it's next to
 		if (this_row == 0 || this_row == size - 1)
 			score -= 10;
 		if (this_col == 0 || this_col == size - 1)
-			score -= 10; // score = score = 10;
+			score -= 10;
+		
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j < 1; j++) {
 				if (i + this_row >= 0 && i + this_row <= size - 1 && j + this_col >= 0 && j + this_col <= size - 1) {
 					if (!this.state[this_row + i][this_col + j].equals("-"))
 						score -= Z; // subtract Z for each surrounding cell that is filled
 				}
+				
 				if (i + other_row >= 0 && i + other_row <= size - 1 && j + other_col >= 0
 						&& j + other_col <= size - 1) {
 					if (!this.state[other_row + i][other_col + j].equals("-"))
@@ -333,10 +331,8 @@ public class Board implements Comparable<Board> {
 		if (getPosition(player)[0] == newRow && getPosition(player)[1] == newCol)
 			return false; // player didn't move at all
 
-		int vertDistance = Math.abs(getPosition(player)[0] - newRow); // distance between current row and new row of
-																		// move
-		int horizDistance = Math.abs(getPosition(player)[1] - newCol); // distance between current column and new col of
-																		// move
+		int vertDistance = Math.abs(getPosition(player)[0] - newRow); // distance between current row and new row of move
+		int horizDistance = Math.abs(getPosition(player)[1] - newCol); // distance between current column and new col of move
 
 		// check cardinal direction - NORTH
 		if (newRow < getPosition(player)[0] && newCol == getPosition(player)[1]) {
@@ -503,8 +499,7 @@ public class Board implements Comparable<Board> {
 			return false;
 	}
 
-	// prints out the current game board settings along with the past moves made by
-	// players
+	// prints out the current game board settings along with the past moves made by players
 	public void printBoard(ArrayList<String> xMoves, ArrayList<String> oMoves) {
 		String[] rowIndexes = new String[] { "A", "B", "C", "D", "E", "F", "G", "H" };
 
@@ -553,46 +548,4 @@ public class Board implements Comparable<Board> {
 			for (int index = size; index < oMoves.size(); index++)
 				System.out.println("\t\t\t" + (index + 1) + ".     \t\t" + oMoves.get(index));
 	}
-	private Vector<Point> validMoves;
-	private int depth;
-	private char turn;
-	public int value;
-	private char[][] state;
-
-	public Vector<Point> getValidMoves() {
-		return this.validMoves;
-
-	}
-
-	public int getDepth() {
-        return this.depth;
-
-	}
-
-	public int evaluate() {
-		return depth;
-		
-	}
-
-	public char getTurn(){
-        return this.turn;
-    }
-
-	public int[] findChar(char current_char) {
-		int[] coordinates = new int[2];
-        // find the char
-        for (int i = 0; i<8; i++){
-            for (int j = 0; j<8; j++){
-                if (this.state[i][j] == current_char){
-                    coordinates[0] = i;
-                    coordinates[1] = j;
-                }
-            }
-        }
-        return coordinates;
-	}
-
-	
-
-	
 }
