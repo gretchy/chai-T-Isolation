@@ -21,20 +21,20 @@ public class Board implements Comparable {
 	}
 
 	// constructor with parameters: Board, Point, and String
-	public Board(Board parent, Point move_to, String player) {
+	public Board(Board parent, Point moveTo, String player) {
 		this.state = new String[size][size];
 
 		// copy over board state from parent/previous state of the game
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++)
-				this.state[i][j] = parent.state[i][j];
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++)
+				this.state[row][col] = parent.state[row][col];
 		}
 
 		// stores the old coordinates of player
 		int[] old_coordinates = this.getPosition(player);
 
-		this.setState((int) move_to.getX(), (int) move_to.getY(), player);
-		this.setState(old_coordinates[0], old_coordinates[1], "#"); // mark old location with visited symbol
+		this.updateState((int) moveTo.getX(), (int) moveTo.getY(), player);
+		this.updateState(old_coordinates[0], old_coordinates[1], "#"); // mark old location with visited symbol
 
 		if (player.equals("X"))
 			this.turn = "O"; // switching turn to O player
@@ -42,7 +42,7 @@ public class Board implements Comparable {
 			this.turn = "X"; // switching turn to X player
 
 		this.depth = parent.depth + 1;
-		this.validMoves = this.setValidMoves();
+		this.validMoves = this.updateValidMoves();
 		this.value = 0;
 	}
 
@@ -67,13 +67,13 @@ public class Board implements Comparable {
 	}
 
 	// setter to update the state with a String parameter
-	public void setState(String[][] that_state) {
-		this.state = that_state;
+	public void updateState(String[][] otherState) {
+		this.state = otherState;
 	}
 
 	// setter to update the state with parameters: int, int, and String
-	public void setState(int i, int j, String val) {
-		this.state[i][j] = val;
+	public void updateState(int row, int col, String s) {
+		this.state[row][col] = s;
 	}
 
 	// setter for the player turn
@@ -87,7 +87,7 @@ public class Board implements Comparable {
 	}
 
 	// establishes all the valid moves for current player
-	public Vector<Point> setValidMoves() {
+	public Vector<Point> updateValidMoves() {
 		int limit; // to be used in diagonals
 		Vector<Point> possibleMoves = new Vector<Point>(); // stores all the possible valid moves
 		int[] coordinates = getPosition(this.turn); // stores current player's coordinates
@@ -169,10 +169,10 @@ public class Board implements Comparable {
 	}
 
 	// calculates number of available moves that opponent has
-	public int opponentValidMoves(String that_String) {
+	public int opponentValidMoves(String opponent) {
 		int limit; // to be used in diagonals
 		Vector<Point> oppValidMoves = new Vector<Point>(); // stores all valid moves for opponent
-		int[] coordinates = getPosition(that_String); // stores opponent's current location
+		int[] coordinates = getPosition(opponent); // stores opponent's current location
 		
 		// cardinal direction - NORTH
 				for (int index = coordinates[0] - 1; index >= 0; index--) {
@@ -261,34 +261,34 @@ public class Board implements Comparable {
 		int Y = 1;
 		int Z = 3;
 
-		String that_String = "X";
+		String otherPlayer = "X";
 		if (this.turn.equals("X"))
-			that_String = "O";
+			otherPlayer = "O";
 
-		int this_row = this.getPosition(this.turn)[0];
-		int that_row = this.getPosition(that_String)[0];
-		int this_col = this.getPosition(this.turn)[1];
-		int that_col = this.getPosition(that_String)[1];
+		int thisRow = this.getPosition(this.turn)[0];
+		int otherRow = this.getPosition(otherPlayer)[0];
+		int thisCol = this.getPosition(this.turn)[1];
+		int otherCol = this.getPosition(otherPlayer)[1];
 		
 		// start with X times the number of valid moves
 		int score = X * this.validMoves.size();
 		// subtract Y times the number of opponent's valid moves
-		score -= Y * this.opponentValidMoves(that_String);
+		score -= Y * this.opponentValidMoves(otherPlayer);
 		
 		// subtract 10 for each wall it's next to
-		if (this_row == 0 || this_row == size - 1)
+		if (thisRow == 0 || thisRow == size - 1)
 			score -= 10;
-		if (this_col == 0 || this_col == size - 1)
+		if (thisCol == 0 || thisCol == size - 1)
 			score -= 10;
 		
-		for (int i = -1; i <= 1; i++) {
-			for (int j = -1; j < 1; j++) {
-				if (i + this_row >= 0 && i + this_row <= size - 1 && j + this_col >= 0 && j + this_col <= size - 1) {
-					if (!this.state[this_row + i][this_col + j].equals("-"))
+		for (int row = -1; row <= 1; row++) {
+			for (int col = -1; col < 1; col++) {
+				if (row + thisRow >= 0 && row + thisRow <= size - 1 && col + thisCol >= 0 && col + thisCol <= size - 1) {
+					if (!this.state[thisRow + row][thisCol + col].equals("-"))
 						score -= Z; // subtract Z for each surrounding cell that is filled
 				}
-				if (i + that_row >= 0 && i + that_row <= size - 1 && j + that_col >= 0 && j + that_col <= size - 1) {
-					if (!this.state[that_row + i][that_col + j].equals("-"))
+				if (row + otherRow >= 0 && row + otherRow <= size - 1 && col + otherCol >= 0 && col + otherCol <= size - 1) {
+					if (!this.state[otherRow + row][otherCol + col].equals("-"))
 						score += Z; // add Z for each cell surrounding the opponent that is filled
 				}
 
@@ -437,14 +437,14 @@ public class Board implements Comparable {
 
 	// checks if a player has been isolated by the opponent
 	public boolean isIsolated(String player) {
-		for (int x = -1; x < 2; x++) {
-			for (int y = -1; y < 2; y++) {
-				if (x != 0 || y != 0) {
+		for (int row = -1; row < 2; row++) {
+			for (int col = -1; col < 2; col++) {
+				if (row != 0 || col != 0) {
 					// check if row value would be out of bounds
-					if (getPosition(player)[0] + x >= 0 && getPosition(player)[0] + x < 8) {
+					if (getPosition(player)[0] + row >= 0 && getPosition(player)[0] + row < 8) {
 						// check if column value would be out of bounds
-						if (getPosition(player)[1] + y >= 0 && getPosition(player)[1] + y < 8) {
-							if (state[getPosition(player)[0] + x][getPosition(player)[1] + y].equals("-"))
+						if (getPosition(player)[1] + col >= 0 && getPosition(player)[1] + col < 8) {
+							if (state[getPosition(player)[0] + row][getPosition(player)[1] + col].equals("-"))
 								return false; // there is still an empty space for player to move to
 						}
 					}
@@ -460,9 +460,9 @@ public class Board implements Comparable {
 		String[][] thisState = this.getState();
 		String[][] thatState = ((Board) other).getState();
 		int length = this.getState().length;
-		for (int i = 0; i < length; i++) {
-			for (int j = 0; j < length; j++) {
-				if (!thisState[i][j].equals(thatState[i][j]))
+		for (int row = 0; row < length; row++) {
+			for (int col = 0; col < length; col++) {
+				if (!thisState[row][col].equals(thatState[row][col]))
 					return 1;
 			}
 		}

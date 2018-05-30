@@ -55,13 +55,13 @@ public class IsolationMain {
 		System.out.println("");
 
 		initialize(); // set up the initial game board
-		root.setState(board);
+		root.updateState(board);
 
-		boolean computer_turn; // indicates if it is the computer's turn to move
+		boolean computersMove; // indicates if it is the computer's turn to move
 		if (player.equals("C"))
-			computer_turn = true; // computer was chosen to start
+			computersMove = true; // computer was chosen to start
 		else
-			computer_turn = false; // opponent was chosen to start
+			computersMove = false; // opponent was chosen to start
 
 		root.printBoard(xMoves, oMoves); // print initial board (all blank w/ X & O at starting positions)
 
@@ -74,12 +74,12 @@ public class IsolationMain {
 			root.clearValidMoves();
 
 			// computer's turn to make move
-			if (computer_turn) {
+			if (computersMove) {
 				root.setTurn(computer);
 				if (!root.isIsolated(computer)) { // computer still has room to move
-					root.validMoves = root.setValidMoves();
+					root.validMoves = root.updateValidMoves();
 					computerMove(); // computer makes move
-					root.setState(board); // updates root with new settings
+					root.updateState(board); // updates root with new settings
 					root.printBoard(xMoves, oMoves); // print out board to reflect move
 					System.out.println("\nComputer's move is: " + xMoves.get(xMoves.size() - 1));
 					round++;
@@ -93,7 +93,6 @@ public class IsolationMain {
 			else {
 				root.setTurn(opponent);
 				if (!root.isIsolated(opponent)) { // opponent still has room to move
-					//root.validMoves = root.setValidMoves();
 					opponentMove(); // opponent makes move
 					//root.printBoard(xMoves, oMoves); // print out board to reflect move
 					round++;
@@ -104,7 +103,7 @@ public class IsolationMain {
 				}
 			}
 			// switches to other player's turn
-			computer_turn = !computer_turn;
+			computersMove = !computersMove;
 		}
 
 		System.out.println();
@@ -123,77 +122,6 @@ public class IsolationMain {
 					board[row][col] = "-"; // represents empty, unvisited spot
 			}
 		}
-	}
-
-	// alpha-beta pruning method, returns the best move for computer to make
-	public static int alphaBetaSearch(Board root, int depth_limit) {
-		int score = maxValue(root, neg_infinity, infinity, depth_limit);
-		return score;
-	}
-
-	// calculates best MAX value
-	public static int maxValue(Board node, int alpha, int beta, int depth_limit) {
-		elapsedTime = (System.nanoTime() - startTime) / 1000000000; // calculates how much time has already gone by
-
-		// return utility of node because the depth has been exceeded, there are no
-		// valid moves, or too much time has passed
-		if (node.getDepth() >= depth_limit || node.getValidMoves().size() == 0 || elapsedTime >= .95 * timeLimit) {
-			return node.evaluate();
-		}
-
-		int value = neg_infinity;
-		Iterator itr = node.getValidMoves().iterator();
-
-		// iterating through all the valid moves
-		while (itr.hasNext()) {
-			Point move = (Point) itr.next();
-			Board child = new Board(node, move, node.getTurn());
-			children.add(child);
-
-			// grab the largest number between the already existing value and the minimum
-			value = Math.max(value, minValue(child, alpha, beta, depth_limit));
-			child.value = value;
-
-			// if alpha >= beta, prune
-			if (value >= beta)
-				return value;
-
-			alpha = Math.max(alpha, value);
-		}
-
-		return value;
-	}
-
-	// calculates best MIN value
-	public static int minValue(Board node, int alpha, int beta, int depth_limit) {
-		elapsedTime = (System.nanoTime() - startTime) / 1000000000; // calculates how much time has already gone by
-
-		// return utility of node because the depth has been exceeded, there are no
-		// valid moves, or too much time has passed
-		if (node.getDepth() >= depth_limit || node.getValidMoves().size() == 0 || elapsedTime > .95 * timeLimit) {
-			// best_move = node.findChar(node.getTurn());
-			return node.evaluate();
-		}
-
-		int value = infinity;
-		Iterator itr = node.getValidMoves().iterator();
-
-		// iterating through all the valid moves
-		while (itr.hasNext()) {
-			Point move = (Point) itr.next();
-			Board child = new Board(node, move, node.getTurn());
-
-			// grab the smallest number between the already existing value and the minimum
-			value = Math.min(value, minValue(child, alpha, beta, depth_limit));
-			child.value = value;
-
-			// if alpha >= beta, prune
-			if (value >= beta)
-				return value;
-
-			alpha = Math.min(beta, value);
-		}
-		return value;
 	}
 
 	// edits the game board to reflect new valid move made by computer
@@ -215,45 +143,45 @@ public class IsolationMain {
 			}
 		}
 
-		int[] bestMove = new int[2]; // will hold the best move for the computer
+		int[] newCoords = new int[2]; // will hold the best move for the computer
 
 		// among all children, randomly pick one
 		if (sameScoreChildren.size() > 0) {
 			// Random integer generator used for fairness
 			Random numGen = new Random();
-			bestMove = sameScoreChildren.get(numGen.nextInt(sameScoreChildren.size())).getPosition(computer);
+			newCoords = sameScoreChildren.get(numGen.nextInt(sameScoreChildren.size())).getPosition(computer);
 		}
 
-		int[] old_coord = root.getPosition(computer); // stores where X is currently located
-		board[bestMove[0]][bestMove[1]] = computer; // stores the coordinates that X is to move to
-		board[old_coord[0]][old_coord[1]] = "#"; // old position is marked with a used/visited symbol
+		int[] oldCoords = root.getPosition(computer); // stores where X is currently located
+		board[newCoords[0]][newCoords[1]] = computer; // stores the coordinates that X is to move to
+		board[oldCoords[0]][oldCoords[1]] = "#"; // old position is marked with a used/visited symbol
 
 		// convert row value from an integer to an A-H character
 		String move;
-		if (bestMove[0] == 0)
+		if (newCoords[0] == 0)
 			move = "A";
-		else if (bestMove[0] == 1)
+		else if (newCoords[0] == 1)
 			move = "B";
-		else if (bestMove[0] == 2)
+		else if (newCoords[0] == 2)
 			move = "C";
-		else if (bestMove[0] == 3)
+		else if (newCoords[0] == 3)
 			move = "D";
-		else if (bestMove[0] == 4)
+		else if (newCoords[0] == 4)
 			move = "E";
-		else if (bestMove[0] == 5)
+		else if (newCoords[0] == 5)
 			move = "F";
-		else if (bestMove[0] == 6)
+		else if (newCoords[0] == 6)
 			move = "G";
 		else
 			move = "H";
 
-		move += bestMove[1] + 1; // attached the column value
+		move += newCoords[1] + 1; // attached the column value
 		xMoves.add(move); // computer makes move, add to ArrayList for printBoard() to use
 	}
 
 	// edits the game board to reflect new valid move made by opponent
 	public static void opponentMove() {
-		int[] coordinates = root.getPosition(opponent); // stored current coordinates of O
+		int[] oldCoords = root.getPosition(opponent); // stored current coordinates of O
 
 		// grabbing opponent's new location
 		System.out.print("\nEnter oponent's move: ");
@@ -294,12 +222,83 @@ public class IsolationMain {
 		// checks to see if move is valid
 		if (root.checkMove(opponent, rowValue, colValue)) {
 			oMoves.add(move); // opponent makes move, add to ArrayList for printBoard() to use
-			root.setState(rowValue, colValue, opponent); // O moves to new spot
-			root.setState(coordinates[0], coordinates[1], "#"); // old position is marked with a # symbol
+			root.updateState(rowValue, colValue, opponent); // O moves to new spot
+			root.updateState(oldCoords[0], oldCoords[1], "#"); // old position is marked with a # symbol
 		}
 		else { // keep asking until opponent enters valid move
 			System.out.println("\nInvalid move. Please enter another move.");
 			opponentMove();
 		}
 	}
+	
+	// alpha-beta pruning method, returns the best move for computer to make
+		public static int alphaBetaSearch(Board root, int maxDepth) {
+			int score = maxValue(root, neg_infinity, infinity, maxDepth);
+			return score;
+		}
+
+		// calculates best MAX value
+		public static int maxValue(Board node, int alpha, int beta, int maxDepth) {
+			elapsedTime = (System.nanoTime() - startTime) / 1000000000; // calculates how much time has already gone by
+
+			// return utility of node because the depth has been exceeded, there are no
+			// valid moves, or too much time has passed
+			if (node.getDepth() >= maxDepth || node.getValidMoves().size() == 0 || elapsedTime >= .95 * timeLimit) {
+				return node.evaluate();
+			}
+
+			int value = neg_infinity;
+			Iterator itr = node.getValidMoves().iterator();
+
+			// iterating through all the valid moves
+			while (itr.hasNext()) {
+				Point move = (Point) itr.next();
+				Board child = new Board(node, move, node.getTurn());
+				children.add(child);
+
+				// grab the largest number between the already existing value and the minimum
+				value = Math.max(value, minValue(child, alpha, beta, maxDepth));
+				child.value = value;
+
+				// if alpha >= beta, prune
+				if (value >= beta)
+					return value;
+
+				alpha = Math.max(alpha, value);
+			}
+
+			return value;
+		}
+
+		// calculates best MIN value
+		public static int minValue(Board node, int alpha, int beta, int maxDepth) {
+			elapsedTime = (System.nanoTime() - startTime) / 1000000000; // calculates how much time has already gone by
+
+			// return utility of node because the depth has been exceeded, there are no
+			// valid moves, or too much time has passed
+			if (node.getDepth() >= maxDepth || node.getValidMoves().size() == 0 || elapsedTime > .95 * timeLimit) {
+				// best_move = node.findChar(node.getTurn());
+				return node.evaluate();
+			}
+
+			int value = infinity;
+			Iterator itr = node.getValidMoves().iterator();
+
+			// iterating through all the valid moves
+			while (itr.hasNext()) {
+				Point move = (Point) itr.next();
+				Board child = new Board(node, move, node.getTurn());
+
+				// grab the smallest number between the already existing value and the minimum
+				value = Math.min(value, minValue(child, alpha, beta, maxDepth));
+				child.value = value;
+
+				// if alpha >= beta, prune
+				if (value >= beta)
+					return value;
+
+				alpha = Math.min(beta, value);
+			}
+			return value;
+		}
 }
