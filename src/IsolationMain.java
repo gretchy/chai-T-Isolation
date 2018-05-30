@@ -177,14 +177,16 @@ public class IsolationMain {
 			rowValue = 5;
 		else if (move.startsWith("G") || move.startsWith("g"))
 			rowValue = 6;
-		else
+		else if (move.startsWith("H") || move.startsWith("h"))
 			rowValue = 7;
+		else
+			rowValue = 10;
 
 		// grabbing the column value
 		int colValue = Integer.parseInt(move.substring(1)) - 1;
 
 		// checks to see if move is valid
-		if (root.checkMove(opponent, move)) {
+		if (root.checkMove(opponent, rowValue, colValue)) {
 			oMoves.add(move); // opponent makes move, add to ArrayList for printBoard() to use
 			root.setState(rowValue, colValue, opponent); // O moves to new spot
 			root.setState(coordinates[0], coordinates[1], "#"); // old position is marked with a # symbol
