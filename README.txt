@@ -14,7 +14,7 @@ Running program via command prompt:
 Running program via Eclipse:
 	Import project folder through "File > Import"
 	Run program by
-		right clicking ".java" and selecting "Run As > Java Application"
+		right clicking "IsolationMain.java" and selecting "Run As > Java Application"
 		or
 		pressing "Alt-Shift-X" and then "J"
 		or
