@@ -1,6 +1,11 @@
 import java.awt.Point;
+<<<<<<< HEAD
 import java.util.Vector;
+=======
+>>>>>>> 5d1383ab2ce71ca33110d6765a3f12dbc7d60872
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Vector;
 
 public class Board implements Comparable<Board> {
 	public static int size = 8; // width of board
@@ -10,13 +15,20 @@ public class Board implements Comparable<Board> {
 	public Vector<Point> validMoves; // all the legal moves that a player can make
 	public int value; // used for utility function
 
+
 	// basic constructor
 	public Board() {
+<<<<<<< HEAD
 		this.state = new String[size][size];
 		this.turn = "X";
 		this.depth = 0;
 		this.validMoves = new Vector<Point>();
 		this.value = 0;
+=======
+
+		initialize();
+		printBoard();
+>>>>>>> 5d1383ab2ce71ca33110d6765a3f12dbc7d60872
 	}
 
 	// constructor with parameters: Board, Point, and String
@@ -541,4 +553,46 @@ public class Board implements Comparable<Board> {
 			for (int index = size; index < oMoves.size(); index++)
 				System.out.println("\t\t\t" + (index + 1) + ".     \t\t" + oMoves.get(index));
 	}
+	private Vector<Point> validMoves;
+	private int depth;
+	private char turn;
+	public int value;
+	private char[][] state;
+
+	public Vector<Point> getValidMoves() {
+		return this.validMoves;
+
+	}
+
+	public int getDepth() {
+        return this.depth;
+
+	}
+
+	public int evaluate() {
+		return depth;
+		
+	}
+
+	public char getTurn(){
+        return this.turn;
+    }
+
+	public int[] findChar(char current_char) {
+		int[] coordinates = new int[2];
+        // find the char
+        for (int i = 0; i<8; i++){
+            for (int j = 0; j<8; j++){
+                if (this.state[i][j] == current_char){
+                    coordinates[0] = i;
+                    coordinates[1] = j;
+                }
+            }
+        }
+        return coordinates;
+	}
+
+	
+
+	
 }
