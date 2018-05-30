@@ -9,7 +9,7 @@ README
 Running program via command prompt:
 	Make src folder of project the current working directory or have all 4 source files in one folder/directory
 	Compile individual files by "javac [filename].java" or all four at once by "javac *.java"
-	Run program through "java "
+	Run program through "java IsolationMain"
 
 Running program via Eclipse:
 	Import project folder through "File > Import"
