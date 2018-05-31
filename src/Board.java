@@ -481,7 +481,7 @@ public class Board implements Comparable {
 	public void printBoard(ArrayList<String> xMoves, ArrayList<String> oMoves) {
 		String[] rowIndexes = new String[] { "A", "B", "C", "D", "E", "F", "G", "H" };
 
-		System.out.println("\n  1 2 3 4 5 6 7 8\tComputer vs. Oponent");
+		System.out.println("\n  1 2 3 4 5 6 7 8\tComputer vs. Opponent");
 
 		// printing actual playing board portion
 		for (int row = 0; row < size; row++) {
